@@ -57,6 +57,7 @@ const userSchema = new mongoose.Schema({
 });
 
 /* Middleware s*/
+
 // Encrypt Password: receive => Encrypt => save to DB
 userSchema.pre('save', async function(next) {
   // only run this function if passwprd was actually modified
@@ -79,7 +80,7 @@ userSchema.pre('save', function(next) {
 
 // middleware happens before query find execution
 userSchema.pre(/^find/, function(next) {
-  // this points to the curr document
+  // "this" points to the curr document
   this.find({ active: { $ne: false } });
   next();
 });
