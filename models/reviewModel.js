@@ -26,7 +26,7 @@ const reviewSchema = new mongoose.Schema(
 );
 
 reviewSchema.pre(/^find/, function(next) {
-  // two quiries
+  // two queries
   this.populate({
     path: 'tour',
     select: 'name'
