@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const catchAsync = require('./../utils/catchAsync');
 const AppError = require('./../utils/appError');
+const factory = require('./../controllers/handlerFactory');
 
 const filterRequestBody = (requestBody, ...allowedFields) => {
   const newBodyObject = {};
@@ -12,26 +13,9 @@ const filterRequestBody = (requestBody, ...allowedFields) => {
   return newBodyObject;
 };
 
-exports.getAllUsers = catchAsync(async (req, res) => {
-  // const users = await User.find({ active: { $ne: false } });
-  const users = await User.find();
+exports.getAllUsers = factory.getAll(User);
 
-  // SEND RESPONSE
-  res.status(200).json({
-    status: 'success',
-    results: users.length,
-    data: {
-      users
-    }
-  });
-});
-
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: 'internal server error',
-    message: 'this route is not defined yet'
-  });
-};
+exports.getUser = factory.getOne(User);
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1- Create Error if user POSTed password data;
@@ -43,7 +27,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // 2- Filter the data coming from the request
+  // 2- Filter the data coming from the request, so that no a normal user changes their role from 'user' to 'admin'
   const filteredBody = filterRequestBody(req.body, 'name', 'email');
 
   // 3- If not => Update user document
@@ -73,21 +57,13 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.updateUser = (req, res) => {
-  res.status(500).json({
-    status: 'internal server error',
-    message: 'this route is not defined yet'
-  });
-};
 exports.createUser = (req, res) => {
   res.status(500).json({
     status: 'internal server error',
-    message: 'this route is not defined yet'
+    message: 'Go to /signup route'
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: 'internal server error',
-    message: 'this route is not defined yet'
-  });
-};
+
+// Do NOT Update password with this handler!
+exports.updateUser = factory.updateOne(User);
+exports.deleteUser = factory.deleteOne(User);
