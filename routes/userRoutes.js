@@ -19,6 +19,12 @@ router.patch(
   authController.updatePassword
 );
 router.patch('/updateMe', authController.protect, userController.updateMe); // current user wants to update some of their data
+router.get(
+  '/me',
+  authController.protect,
+  userController.getMe,
+  userController.getUser
+);
 router.delete('/deleteMe', authController.protect, userController.deleteMe); // current user wants to delete their account
 
 // REST
