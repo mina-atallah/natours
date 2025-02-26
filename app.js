@@ -55,7 +55,7 @@ app.use(
   })
 );
 
-// Serving Static Files
+// Serving Static Files.
 app.use(express.static(`${__dirname}/public`));
 
 // TEST middleware
