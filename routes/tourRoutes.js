@@ -7,8 +7,8 @@ const router = express.Router();
 
 // router.param('id', tourController.checkID);
 /*
-  REQUEST: /tour/tourID/reviews (reviews is a child of tour)  
-*/
+ * REQUEST /tour/tourID/reviews (reviews is a child of tour)
+ */
 router.use('/:tourId/reviews', reviewRouter);
 
 router
