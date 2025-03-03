@@ -25,6 +25,13 @@ const reviewSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+// compound index to prevent duplicate reviews by making the combination of tour and user to be unique
+reviewSchema.index(
+  { tour: 1, user: 1 },
+  {
+    unique: true
+  }
+);
 
 reviewSchema.statics.calcAverageRatings = async function(tourId) {
   const stats = await this.aggregate([
@@ -39,7 +46,6 @@ reviewSchema.statics.calcAverageRatings = async function(tourId) {
       }
     }
   ]);
-  console.log(stats);
   if (stats.length > 0) {
     await Tour.findByIdAndUpdate(tourId, {
       ratingsAverage: stats[0].avgRating,
@@ -67,6 +73,7 @@ reviewSchema.post('save', function() {
   // this.construcotr.calcAverageRatings(this.tour) ==> does not work on post middleware;
   this.model('Review').calcAverageRatings(this.tour);
 });
+
 /*
  * findByIdAndUpdate & findByIdAndDelete
  * ==> both gets converted to findOneAnd(ACTION)
@@ -74,11 +81,14 @@ reviewSchema.post('save', function() {
 reviewSchema.pre(/^findOneAnd/, async function(next) {
   // create 'r' which means review to pass to the next query-middleware
   this.r = await this.findOne();
-  console.log(this.r);
   next();
 });
 reviewSchema.post(/^findOneAnd/, async function() {
-  await this.r.constructor.calcAverageRatings(this.r.tour);
+  if (this.r) {
+    await this.r.constructor.calcAverageRatings(this.r.tour);
+  } else {
+    console.log('No review found to update.');
+  }
 });
 
 const Review = mongoose.model('Review', reviewSchema);
