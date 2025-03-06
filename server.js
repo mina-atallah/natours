@@ -10,19 +10,18 @@ dotenv.config({ path: './config.env' });
 
 const app = require('./app');
 
-const DB = process.env.DATABASE.replace(
-  '<PASSWORD>',
+const DB = process.env.DB_URI.replace(
+  '<db_password>',
   process.env.DB_PASSWORD.trim()
 );
 
 mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-    useCreateIndex: true,
-    useFindAndModify: false,
-    useUnifiedTopology: true
-  })
-  .then(() => console.log('DB connection successful!'));
+  .connect(DB)
+  .then(() => console.log('DB connection successful!'))
+  .catch(err => {
+    console.error('Database connection error:', err);
+    process.exit(1);
+  });
 
 const port = process.env.PORT || 3000;
 
