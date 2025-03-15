@@ -1,6 +1,9 @@
 extends base
 include _reviewCard
 
+block append head
+    link(rel='stylesheet' href='/css/leaflet.css')
+
 mixin overviewBox(label,text,icon)
     .overview-box__detail
                         svg.overview-box__icon
@@ -59,7 +62,7 @@ block content
                 img.picture-box__img.picture-box__img--1(src=`/img/tours/${img}`, alt=`${tour.name} ${i + 1}` class=`picture-box__img--${i +1}`)
         
     section.section-map
-        #map
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews
