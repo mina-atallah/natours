@@ -9,12 +9,17 @@
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "set NODE_ENV=production && nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "Mina Atallah",
   "license": "ISC",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^1.8.3",
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.7",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
     "express": "^4.21.1",
@@ -23,6 +28,7 @@
     "helmet": "^8.0.0",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^9.0.2",
+    "leaflet": "^1.9.4",
     "mongoose": "^8.12.1",
     "morgan": "^1.10.0",
     "nodemailer": "^6.9.16",
@@ -32,6 +38,8 @@
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
+    "@parcel/optimizer-esbuild": "^2.13.3",
+    "buffer": "^6.0.3",
     "eslint": "^5.16.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-config-prettier": "^4.1.0",
@@ -41,6 +49,8 @@
     "eslint-plugin-prettier": "^3.0.1",
     "eslint-plugin-react": "^7.12.4",
     "ndb": "^0.2.4",
-    "prettier": "^1.17.0"
+    "parcel-bundler": "^1.12.5",
+    "prettier": "^1.17.0",
+    "process": "^0.11.10"
   }
 }

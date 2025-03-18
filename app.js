@@ -6,6 +6,7 @@ const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
@@ -31,6 +32,12 @@ app.use(
       directives: {
         ...helmet.contentSecurityPolicy.getDefaultDirectives(),
         'script-src': ["'self'"],
+        connectSrc: [
+          "'self'",
+          ...(process.env.NODE_ENV === 'development'
+            ? ['ws://localhost:*', 'ws://127.0.0.1:*']
+            : [])
+        ],
         'img-src': [
           "'self'",
           'data:',
@@ -58,6 +65,7 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(cookieParser());
 
 // After reading data coming from req.body => Data Sanitization:
 /*
@@ -83,6 +91,7 @@ app.use(
 // TEST middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
+  console.log(req.cookies);
   next();
 });
 

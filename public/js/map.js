@@ -11,18 +11,18 @@ const htmlIcon = L.divIcon({
 });
 */
 
-const customIcon = L.icon({
-  iconUrl: '/img/pin.png',
-  className: 'marker',
-  html: '<div></div>'
-});
+export const displayMap = (locations, mapEl, L) => {
+  // const customIcon = L.icon({
+  //   iconUrl: '/img/pin.png',
+  //   className: 'marker',
+  //   html: '<div></div>'
+  // });
 
-// After Document is loaded
-document.addEventListener('DOMContentLoaded', () => {
-  const mapEl = document.getElementById('map');
-
-  // Get locations from data attribute
-  const locations = JSON.parse(mapEl.dataset.locations);
+  delete L.Icon.Default.prototype._getIconUrl;
+  L.Icon.Default.mergeOptions({
+    iconUrl: '/img/pin.png',
+    shadowUrl: '/img/marker-shadow.png' // Updated path
+  });
 
   if (!locations || locations.length === 0) {
     mapEl.innerHTML = '<p class="error">No locations available</p>';
@@ -52,11 +52,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // Add markers
   const markers = locations.map(
     loc =>
-      L.marker([loc.coordinates[1], loc.coordinates[0]], {
-        icon: customIcon
-      }).bindPopup(`Day ${loc.day}, ${loc.description}`, {
-        offset: L.point(15, 15)
-      }) // Additional offset);
+      L.marker([loc.coordinates[1], loc.coordinates[0]]).bindPopup(
+        `Day ${loc.day}, ${loc.description}`,
+        {
+          offset: L.point(0, 10)
+        }
+      ) // Additional offset);
   );
 
   // Create marker group
@@ -84,4 +85,4 @@ document.addEventListener('DOMContentLoaded', () => {
   setTimeout(() => {
     animatedZoom();
   }, 500);
-});
+};

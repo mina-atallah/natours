@@ -85,6 +85,9 @@ exports.protect = catchAsync(async (req, res, next) => {
     req.headers.authorization.startsWith('Bearer')
   ) {
     token = req.headers.authorization.split(' ')[1];
+  } else if (req.cookies.jwt) {
+    // able to authenticate users based on tokens sent by cookies
+    token = req.cookies.jwt;
   }
 
   if (!token) {
@@ -118,6 +121,34 @@ exports.protect = catchAsync(async (req, res, next) => {
   next();
 });
 
+// isLoggedIn => is a middleware for rendered pages
+exports.isLoggedIn = catchAsync(async (req, res, next) => {
+  if (req.cookies.jwt) {
+    // 1) Validate/Verification the token
+    const decoded = await promisify(jwt.verify)(
+      req.cookies.jwt,
+      process.env.JWT_SECRET
+    );
+
+    // 2) Check of user still exists
+    const currentUser = await User.findById(decoded.id);
+
+    if (!currentUser) return next();
+
+    // 3) if user changes password after token was issued
+    if (currentUser.changedPasswordAfter(decoded.iat)) {
+      return next();
+    }
+
+    /* 
+                          <-- There is a logged-in user --> 
+      res.locals.user => whatever is being put into locals will be a variable accessable by the templates
+    */
+    res.locals.user = currentUser;
+    return next();
+  }
+  next();
+});
 /* Authorization */
 exports.restrictTo = (...roles) => {
   // roles is an array
