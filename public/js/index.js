@@ -3,7 +3,7 @@ import '@babel/polyfill';
 import L from 'leaflet';
 
 import { displayMap } from './map.js';
-import { login } from './login.js';
+import { login, logout } from './login.js';
 
 // initialize map
 const mapEl = document.getElementById('map');
@@ -30,3 +30,7 @@ if (form) {
     }
   });
 }
+
+// handle logout
+const logoutBtn = document.querySelector('.nav__el--logout');
+logoutBtn.addEventListener('click', logout);
