@@ -40,43 +40,64 @@ const handleJWTError = () =>
 const handleJWTExpiredError = () =>
   new AppError('Expired Token. Please log in again', 401);
 
-const sendErrorDev = (err, res) => {
-  return res.status(err.statusCode).json({
-    status: err.status,
-    error: err,
-    message: err.message,
-    stack: err.stack
+const sendErrorDev = (err, req, res) => {
+  // For API
+  if (req.originalUrl.startsWith('/api')) {
+    return res.status(err.statusCode).json({
+      status: err.status,
+      error: err,
+      message: err.message,
+      stack: err.stack
+    });
+  }
+  //For Error Rendered Pages
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: err.message
   });
 };
 
-const sendErrorProd = (err, res) => {
-  // Operational, trusted error: send message to client
-  if (err.isOperational) {
-    return res.status(err.statusCode).json({
-      status: err.status,
-      message: err.message
-    });
-    // Programming or other unknown error: don't leak error details
-  }
-  console.log('Error 💥', err); // Log error in production
+const sendErrorProd = (err, req, res) => {
+  // For API
+  if (req.originalUrl.startsWith('/api')) {
+    // Operational, trusted error: send message to client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
+      });
+      // Programming or other unknown error: don't leak error details
+    }
+    console.log('Error 💥', err); // Log error in production
 
-  return res.status(500).json({
-    status: 'error',
-    message: 'Something went very wrong!'
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong!'
+    });
+  }
+  if (err.isOperational) {
+    //For Error Rendered Pages
+    return res.status(err.statusCode).render('error', {
+      title: 'Something went wrong!',
+      msg: err.message
+    });
+  }
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later!'
   });
 };
 
 module.exports = (err, req, res, next) => {
   //console.log(err.stack); // Log the error
   // console.log('Error received in global handler: ✉', err.name); // Log the error received
-
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
 
   const NODE_ENV = process.env.NODE_ENV.trim();
 
   if (NODE_ENV === 'development') {
-    sendErrorDev(err, res);
+    sendErrorDev(err, req, res);
   } else if (NODE_ENV === 'production') {
     let error = new Error(err.message); // the message is carried over
     error.name = err.name;
@@ -95,6 +116,6 @@ module.exports = (err, req, res, next) => {
     if (err.name === 'TokenExpiredError') error = handleJWTExpiredError();
     // console.log('Error object being sent to sendErrorProd:', error.message);
 
-    sendErrorProd(error, res);
+    sendErrorProd(error, req, res);
   }
 };
