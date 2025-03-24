@@ -4,6 +4,7 @@ import L from 'leaflet';
 
 import { displayMap } from './map.js';
 import { login, logout } from './login.js';
+import { updateData } from './updateSettings.js';
 
 // initialize map
 const mapEl = document.getElementById('map');
@@ -17,7 +18,7 @@ if (mapEl) {
 }
 
 // handle login-form
-const form = document.querySelector('.form');
+const form = document.querySelector('.form--login');
 if (form) {
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -34,3 +35,15 @@ if (form) {
 // handle logout
 const logoutBtn = document.querySelector('.nav__el--logout');
 logoutBtn.addEventListener('click', logout);
+
+// handle update-user-data => /updateMe endpoint ....
+const updateForm = document.querySelector('.form-user-data');
+if (updateForm) {
+  updateForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+
+    updateData(name, email);
+  });
+}
