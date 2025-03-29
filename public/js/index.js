@@ -4,10 +4,16 @@ import L from 'leaflet';
 
 import { displayMap } from './map.js';
 import { login, logout } from './login.js';
-import { updateData } from './updateSettings.js';
+import { updateSettings } from './updateSettings.js';
+
+/* DOM ELEMENTS */
+const mapEl = document.getElementById('map');
+const form = document.querySelector('.form--login');
+const logoutBtn = document.querySelector('.nav__el--logout');
+const userDataForm = document.querySelector('.form-user-data'); // handle update-user-data => /updateMe endpoint...
+const userPasswordForm = document.querySelector('.form-user-password'); // handle update-user-password => /updateMyPassword endpoint...
 
 // initialize map
-const mapEl = document.getElementById('map');
 if (mapEl) {
   try {
     const locations = JSON.parse(mapEl.dataset.locations);
@@ -18,7 +24,6 @@ if (mapEl) {
 }
 
 // handle login-form
-const form = document.querySelector('.form--login');
 if (form) {
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -33,17 +38,33 @@ if (form) {
 }
 
 // handle logout
-const logoutBtn = document.querySelector('.nav__el--logout');
-logoutBtn.addEventListener('click', logout);
+if (logoutBtn) {
+  logoutBtn.addEventListener('click', logout);
+}
 
-// handle update-user-data => /updateMe endpoint ....
-const updateForm = document.querySelector('.form-user-data');
-if (updateForm) {
-  updateForm.addEventListener('submit', e => {
+if (userDataForm) {
+  userDataForm.addEventListener('submit', e => {
     e.preventDefault();
     const name = document.getElementById('name').value;
     const email = document.getElementById('email').value;
+    updateSettings({ name, email }, 'data');
+  });
+}
 
-    updateData(name, email);
+if (userPasswordForm) {
+  userPasswordForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    document.querySelector('.btn--save-password').textContent = 'Updating...';
+    const currentPassword = document.getElementById('password-current').value;
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('password-confirm').value;
+    await updateSettings(
+      { currentPassword, password, passwordConfirm },
+      'password'
+    );
+    document.getElementById('password-current').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('password-confirm').value = '';
+    document.querySelector('.btn--save-password').textContent = 'Save Password';
   });
 }
