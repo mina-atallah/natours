@@ -21,7 +21,11 @@ router.patch('/resetPassword/:token', authController.resetPassword);
 router.use(authController.protect);
 
 router.patch('/updateMyPassword', authController.updatePassword); //current user wants to update their password
-router.patch('/updateMe', userController.updateMe); // current user wants to update some of their data
+router.patch(
+  '/updateMe',
+  userController.uploadUserPhoto,
+  userController.updateMe
+); // current user wants to update some of their data
 router.get('/me', userController.getMe, userController.getUser);
 router.delete('/deleteMe', userController.deleteMe); // current user wants to delete their account
 
