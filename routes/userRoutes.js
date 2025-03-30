@@ -24,6 +24,7 @@ router.patch('/updateMyPassword', authController.updatePassword); //current user
 router.patch(
   '/updateMe',
   userController.uploadUserPhoto,
+  userController.resizeUserPhoto,
   userController.updateMe
 ); // current user wants to update some of their data
 router.get('/me', userController.getMe, userController.getUser);
