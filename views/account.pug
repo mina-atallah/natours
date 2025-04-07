@@ -25,7 +25,9 @@ block content
             .user-view__content
                 .user-view__form-container
                     h2.heading-secondary.ma-bt-md Your account settings
-                    //- form.form.form-user-data(action='/submit-user-data' method='POST')
+                    //- without API
+                    //- form.form.form-user-data(action='/submit-user-data' method='POST' enctype='multipart/form-data') -> multipart is for sending files to the server
+                    //- with API
                     form.form.form-user-data
                         .form__group
                             label.form__label(for='name') Name
@@ -35,7 +37,8 @@ block content
                             input#email.form__input(type='email', value=`${user.email}`, required name='email')
                         .form__group.form__photo-upload
                             img.form__user-photo(src=`/img/users/${user.photo}`, alt=`${user.name} Photo`)
-                            a.btn-text(href='') Choose new photo
+                            input.form__upload(type='file', accept='image/*', id='photo', name='photo')
+                            label(for='photo') Choose new photo
                         .form__group.right
                             button.btn.btn--small.btn--green Save settings
                 .line &nbsp;

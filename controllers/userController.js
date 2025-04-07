@@ -75,7 +75,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
       )
     );
 
-  // 2- Filter the data coming from the request, so that no a normal user changes their role from 'user' to 'admin'
+  // 2- Filter the data coming from the request, so that a normal user can not change their role from 'user' to 'admin'
   const filteredBody = filterRequestBody(req.body, 'name', 'email');
   if (req.file) {
     filteredBody.photo = req.file.filename;
